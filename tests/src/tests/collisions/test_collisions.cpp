@@ -291,3 +291,59 @@ TEST_CASE("Collisions::is_*", "[collisions]")
         CHECK(collisions.is_plane_vertex(i) == (i == 4));
     }
 }
+
+TEST_CASE("Collision class advanced tests", "[collision][mollifier]")
+{
+    VectorMax12d positions, rest_positions;
+    positions.setZero(12);
+    rest_positions.setZero(12);
+
+    double weight = 1.0;
+    Eigen::SparseVector<double> weight_gradient(12);
+    weight_gradient.insert(0) = 1.0;
+
+    Collision collision(weight, weight_gradient);
+
+    SECTION("Test mollifier_threshold returns NaN")
+    {
+        double threshold = collision.mollifier_threshold(rest_positions);
+        INFO("Mollifier threshold value: " << threshold);
+        CHECK(std::isnan(threshold));
+    }
+
+    SECTION("Test mollifier without threshold (zero positions)")
+    {
+        double mollifier_value = collision.mollifier(positions);
+        INFO("Mollifier value without threshold: " << mollifier_value);
+        CHECK(mollifier_value == 1.0);
+    }
+
+    SECTION("Test mollifier with varying threshold")
+    {
+        for (double eps_x : { 0.1, 0.5, 1.0 }) {
+            double mollifier_value = collision.mollifier(positions, eps_x);
+            CAPTURE(eps_x);
+            CHECK(mollifier_value == 1.0);
+        }
+    }
+
+    SECTION("Test non-zero position vectors")
+    {
+        positions << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
+            12.0;
+        double mollifier_value = collision.mollifier(positions);
+        INFO("Mollifier value with non-zero positions: " << mollifier_value);
+        CHECK(mollifier_value == 1.0);
+    }
+
+    SECTION("Test mollifier_gradient with non-zero positions")
+    {
+        positions << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
+            12.0;
+        VectorMax12d gradient = collision.mollifier_gradient(positions);
+        INFO(
+            "Mollifier gradient with non-zero positions: "
+            << gradient.transpose());
+        CHECK(gradient.isZero());
+    }
+}

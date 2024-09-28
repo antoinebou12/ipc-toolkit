@@ -111,3 +111,85 @@ TEST_CASE("Codim points collision mesh", "[collision_mesh]")
     expected_codim_vertices << 0, 1, 2, 3;
     CHECK(mesh.codim_vertices() == expected_codim_vertices);
 }
+
+TEST_CASE("Adjacency and Jacobian initialization checks", "[collision_mesh]")
+{
+    Eigen::MatrixXd V(4, 2);
+    V << 0, 0, 1, 0, 0, 1, 1, 1;
+    CollisionMesh mesh(V);
+
+    SECTION("Uninitialized vertex-vertex adjacencies")
+    {
+        try {
+            mesh.vertex_vertex_adjacencies();
+            FAIL(
+                "Should have thrown runtime error for uninitialized vertex-vertex adjacencies.");
+        } catch (const std::runtime_error& e) {
+            CHECK(
+                std::string(e.what())
+                == "Vertex-vertex adjacencies not initialized. Call init_adjacencies() first.");
+        } catch (...) {
+            FAIL("Unknown exception thrown.");
+        }
+    }
+
+    SECTION("Uninitialized vertex-edge adjacencies")
+    {
+        try {
+            mesh.vertex_edge_adjacencies();
+            FAIL(
+                "Should have thrown runtime error for uninitialized vertex-edge adjacencies.");
+        } catch (const std::runtime_error& e) {
+            CHECK(
+                std::string(e.what())
+                == "Vertex-edge adjacencies not initialized. Call init_adjacencies() first.");
+        } catch (...) {
+            FAIL("Unknown exception thrown.");
+        }
+    }
+
+    SECTION("Uninitialized edge-vertex adjacencies")
+    {
+        try {
+            mesh.edge_vertex_adjacencies();
+            FAIL(
+                "Should have thrown runtime error for uninitialized edge-vertex adjacencies.");
+        } catch (const std::runtime_error& e) {
+            CHECK(
+                std::string(e.what())
+                == "Edge-vertex adjacencies not initialized. Call init_adjacencies() first.");
+        } catch (...) {
+            FAIL("Unknown exception thrown.");
+        }
+    }
+
+    SECTION("Uninitialized vertex area Jacobians")
+    {
+        try {
+            mesh.vertex_area_gradient(0);
+            FAIL(
+                "Should have thrown runtime error for uninitialized vertex area Jacobians.");
+        } catch (const std::runtime_error& e) {
+            CHECK(
+                std::string(e.what())
+                == "Vertex area Jacobian not initialized. Call init_area_jacobians() first.");
+        } catch (...) {
+            FAIL("Unknown exception thrown.");
+        }
+    }
+
+    SECTION("Uninitialized edge area Jacobians")
+    {
+        try {
+            mesh.edge_area_gradient(0);
+            FAIL(
+                "Should have thrown runtime error for uninitialized edge area Jacobians.");
+        } catch (const std::runtime_error& e) {
+            CHECK(
+                std::string(e.what())
+                == "Edge area Jacobian not initialized. Call init_area_jacobians() first.");
+        } catch (...) {
+            FAIL("Unknown exception thrown.");
+        }
+    }
+}
