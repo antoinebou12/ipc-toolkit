@@ -292,7 +292,39 @@ TEST_CASE("Collisions::is_*", "[collisions]")
     }
 }
 
-TEST_CASE("Collision class advanced tests", "[collision][mollifier]")
+class FakeCollision : public Collision {
+public:
+    FakeCollision(
+        const double _weight, const Eigen::SparseVector<double>& _weight_gradient)
+        : Collision(_weight, _weight_gradient) {}
+
+    int num_vertices() const override
+    {
+        return 4;
+    }
+
+    std::array<long, 4> vertex_ids(const MatrixXi&, const MatrixXi&) const override
+    {
+        return {0, 1, 2, 3};
+    }
+
+    double compute_distance(const VectorMax12d&) const override
+    {
+        return 1.0;
+    }
+
+    VectorMax12d compute_distance_gradient(const VectorMax12d& positions) const override
+    {
+        return VectorMax12d::Zero(positions.size());
+    }
+
+    MatrixMax12d compute_distance_hessian(const VectorMax12d& positions) const override
+    {
+        return MatrixMax12d::Zero(positions.size(), positions.size());
+    }
+};
+
+TEST_CASE("Collision class advanced tests with fake class", "[collision][mollifier]")
 {
     VectorMax12d positions, rest_positions;
     positions.setZero(12);
@@ -302,7 +334,7 @@ TEST_CASE("Collision class advanced tests", "[collision][mollifier]")
     Eigen::SparseVector<double> weight_gradient(12);
     weight_gradient.insert(0) = 1.0;
 
-    Collision collision(weight, weight_gradient);
+    FakeCollision collision(weight, weight_gradient);
 
     SECTION("Test mollifier_threshold returns NaN")
     {
