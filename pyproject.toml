@@ -3,7 +3,7 @@ requires = [
     "setuptools>=42",
     "wheel",
     "ninja",
-    # "cmake>=3.14",
+    # "cmake>=3.18",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -25,7 +25,7 @@ classifiers = [
 ]
 requires-python = ">=3.6"
 dependencies = ["numpy", "scipy"]
-keywords = ["IPC", "simulation", "physics", "science", "reserch"]
+keywords = ["IPC", "simulation", "physics", "science", "research"]
 
 [project.urls]
 "Homepage" = "https://ipctk.xyz"
