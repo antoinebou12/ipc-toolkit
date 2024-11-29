@@ -2,7 +2,7 @@
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 
+    "minor": 18
   },
   "configurePresets": [
     {
@@ -93,7 +93,7 @@
       "displayName": "CUDA Debug",
       "description": "Debug build with CUDA support",
       "binaryDir": "${sourceDir}/build/debug-cuda"
-    },
+    }
   ],
   "buildPresets": [
     {
@@ -120,7 +120,7 @@
       "name": "debug-cuda-build",
       "configurePreset": "debug-cuda",
       "description": "Debug build with CUDA support"
-    },
+    }
   ],
   "testPresets": [
     {
